@@ -272,6 +272,21 @@
             </div>
             
             <div class="control-group">
+                <label>🚚 承运商类型</label>
+                <div style="display: flex; gap: 10px;">
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="carrierType" value="全部" checked> 全部
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="carrierType" value="自营"> 自营
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="radio" name="carrierType" value="外协"> 外协
+                    </label>
+                </div>
+            </div>
+            
+            <div class="control-group">
                 <label>📅 发车日期范围</label>
                 <div style="display: flex; gap: 10px;">
                     <input type="date" id="startDate">
@@ -291,6 +306,20 @@
                     cursor: pointer;
                     transition: all 0.3s;
                 ">🔄 刷新数据</button>
+            </div>
+            
+            <div class="control-group">
+                <button onclick="clearFilters()" id="clearFilterBtn" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: rgba(255,107,107,0.2);
+                    border: 1px solid rgba(255,107,107,0.5);
+                    border-radius: 8px;
+                    color: #ff6b6b;
+                    font-size: 14px;
+                    cursor: pointer;
+                    display: none;
+                ">❌ 清除品牌筛选</button>
             </div>
             
             <div style="margin-top: 30px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px;">
@@ -426,7 +455,53 @@
             document.getElementById('provinceSelect').addEventListener('change', loadData);
             document.getElementById('startDate').addEventListener('change', loadData);
             document.getElementById('endDate').addEventListener('change', loadData);
+            document.querySelectorAll('input[name="carrierType"]').forEach(radio => {
+                radio.addEventListener('change', loadData);
+            });
         };
+        
+        // 获取当前筛选条件
+        function getFilterParams() {
+            const province = document.getElementById('provinceSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const carrierType = document.querySelector('input[name="carrierType"]:checked').value;
+            const brand = document.getElementById('selectedBrand')?.value || '';
+            
+            return { province, startDate, endDate, carrierType, brand };
+        }
+        
+        // 清除品牌筛选
+        function clearFilters() {
+            // 清除品牌选择
+            const brandInput = document.getElementById('selectedBrand');
+            if (brandInput) brandInput.remove();
+            
+            // 隐藏清除按钮
+            document.getElementById('clearFilterBtn').style.display = 'none';
+            
+            // 重新加载数据
+            loadData();
+        }
+        
+        // 设置品牌筛选
+        function setBrandFilter(brandName) {
+            // 添加隐藏的品牌输入
+            let brandInput = document.getElementById('selectedBrand');
+            if (!brandInput) {
+                brandInput = document.createElement('input');
+                brandInput.id = 'selectedBrand';
+                brandInput.type = 'hidden';
+                document.querySelector('.sidebar').appendChild(brandInput);
+            }
+            brandInput.value = brandName;
+            
+            // 显示清除按钮
+            document.getElementById('clearFilterBtn').style.display = 'block';
+            
+            // 重新加载数据
+            loadData();
+        }
         
         function initCharts() {
             mapChart = echarts.init(document.getElementById('chinaMap'));
@@ -474,38 +549,45 @@
             const province = document.getElementById('provinceSelect').value;
             const startDate = document.getElementById('startDate').value;
             const endDate = document.getElementById('endDate').value;
+            const carrierType = document.querySelector('input[name="carrierType"]:checked').value;
+            const brand = document.getElementById('selectedBrand')?.value || '';
             
             document.getElementById('dataStatus').textContent = '加载中...';
             
+            const params = `province=${province}&start_date=${startDate}&end_date=${endDate}&carrier_type=${carrierType}&brand=${encodeURIComponent(brand)}`;
+            
             try {
-                const kpiRes = await fetch(`/api/kpi?province=${province}&start_date=${startDate}&end_date=${endDate}`);
+                const kpiRes = await fetch(`/api/kpi?${params}`);
                 const kpi = await kpiRes.json();
                 document.getElementById('kpiTotal').textContent = kpi.total.toLocaleString();
                 document.getElementById('kpiRatio').textContent = kpi.total_ratio + '%';
                 document.getElementById('kpiSelf').textContent = kpi.self_ratio + '%';
                 document.getElementById('kpiOut').textContent = kpi.out_ratio + '%';
                 
-                const mapRes = await fetch(`/api/map_data?province=${province}`);
+                const mapRes = await fetch(`/api/map_data?${params}`);
                 const mapData = await mapRes.json();
                 updateMap(mapData, province);
                 
                 // 更新地图标题
                 const mapTitle = document.getElementById('mapTitle');
-                if (province === '全国概览') {
-                    mapTitle.textContent = '🗺️ 始发省资源分布热力图';
-                } else {
-                    mapTitle.textContent = `🗺️ ${province}发往目的省流向分布`;
+                let titleText = '始发省资源分布热力图';
+                if (province !== '全国概览') {
+                    titleText = province + '发往目的省流向分布';
                 }
+                if (brand) {
+                    titleText = titleText + ' (' + brand + ')';
+                }
+                mapTitle.textContent = '🗺️ ' + titleText;
                 
-                const carrierRes = await fetch(`/api/carrier_data?province=${province}`);
+                const carrierRes = await fetch(`/api/carrier_data?${params}`);
                 const carrierData = await carrierRes.json();
                 updateCarrierPie(carrierData);
                 
-                const brandRes = await fetch(`/api/brand_data?province=${province}`);
+                const brandRes = await fetch(`/api/brand_data?${params}`);
                 const brandData = await brandRes.json();
                 updateBrandBar(brandData);
                 
-                const destRes = await fetch(`/api/dest_data?province=${province}`);
+                const destRes = await fetch(`/api/dest_data?${params}`);
                 const destData = await destRes.json();
                 updateDestBar(destData);
                 
@@ -662,7 +744,23 @@
                 grid: {left: '3%', right: '15%', bottom: '3%', top: '3%', containLabel: true},
                 xAxis: {type: 'value', axisLabel: {color: '#888'}, splitLine: {lineStyle: {color: 'rgba(255,255,255,0.1)'}}},
                 yAxis: {type: 'category', data: data.map(d => d.name), axisLabel: {color: '#fff', fontSize: 11}},
-                series: [{ type: 'bar', data: data.map(d => d.value), itemStyle: {color: '#00d2ff'}, label: {show: true, position: 'right', color: '#fff'} }]
+                series: [{ 
+                    type: 'bar', 
+                    data: data.map(d => d.value), 
+                    itemStyle: {color: '#00d2ff'}, 
+                    label: {show: true, position: 'right', color: '#fff'},
+                    emphasis: {
+                        itemStyle: {color: '#ff6b6b'}
+                    }
+                }]
+            });
+            
+            // 品牌点击事件
+            brandChart.off('click');
+            brandChart.on('click', function(params) {
+                if (params.name) {
+                    setBrandFilter(params.name);
+                }
             });
         }
         

@@ -139,17 +139,35 @@ def api_status():
         "files": DATA_FILES
     })
 
+def apply_filters(df, province, carrier_type, brand):
+    """应用筛选条件"""
+    if df is None or df.empty:
+        return df
+    
+    # 省份筛选
+    if province and province != '全国概览' and '始发省_清理' in df.columns:
+        df = df[df['始发省_清理'] == province]
+    
+    # 承运商类型筛选
+    if carrier_type and carrier_type != '全部' and '运力类型' in df.columns:
+        df = df[df['运力类型'] == carrier_type]
+    
+    # 品牌筛选
+    if brand and brand != '' and '品牌_copy' in df.columns:
+        df = df[df['品牌_copy'] == brand]
+    
+    return df
+
 @app.route('/api/kpi')
 def api_kpi():
     if GLOBAL_DF is None or GLOBAL_DF.empty:
         return jsonify({"error": "无数据"})
     
     province = request.args.get('province', '全国概览')
-    df = GLOBAL_DF.copy()
+    carrier_type = request.args.get('carrier_type', '全部')
+    brand = request.args.get('brand', '')
     
-    # 筛选省份
-    if province and province != '全国概览' and '始发省_清理' in df.columns:
-        df = df[df['始发省_清理'] == province]
+    df = apply_filters(GLOBAL_DF.copy(), province, carrier_type, brand)
     
     total = ensure_native_type(len(df))
     national_total = ensure_native_type(len(GLOBAL_DF))
@@ -176,11 +194,13 @@ def api_map_data():
         return jsonify({"error": "无数据"})
     
     province = request.args.get('province', '全国概览')
-    df = GLOBAL_DF.copy()
+    carrier_type = request.args.get('carrier_type', '全部')
+    brand = request.args.get('brand', '')
+    
+    df = apply_filters(GLOBAL_DF.copy(), province, carrier_type, brand)
     
     if province and province != '全国概览' and '始发省_清理' in df.columns:
         # 选择某省份后，显示目的省流向
-        df = df[df['始发省_清理'] == province]
         if '目的省_清理' in df.columns:
             stats = df.groupby('目的省_清理').size()
             map_data = []
@@ -206,10 +226,10 @@ def api_carrier_data():
         return jsonify([])
     
     province = request.args.get('province', '全国概览')
-    df = GLOBAL_DF.copy()
+    carrier_type = request.args.get('carrier_type', '全部')
+    brand = request.args.get('brand', '')
     
-    if province and province != '全国概览' and '始发省_清理' in df.columns:
-        df = df[df['始发省_清理'] == province]
+    df = apply_filters(GLOBAL_DF.copy(), province, carrier_type, brand)
     
     result = []
     if '运力类型' in df.columns:
@@ -225,16 +245,16 @@ def api_brand_data():
         return jsonify([])
     
     province = request.args.get('province', '全国概览')
-    df = GLOBAL_DF.copy()
+    carrier_type = request.args.get('carrier_type', '全部')
+    brand = request.args.get('brand', '')
     
-    if province and province != '全国概览' and '始发省_清理' in df.columns:
-        df = df[df['始发省_清理'] == province]
+    df = apply_filters(GLOBAL_DF.copy(), province, carrier_type, brand)
     
     result = []
     if '品牌_copy' in df.columns:
         stats = df.groupby('品牌_copy').size().sort_values(ascending=False).head(10)
-        for brand, count in stats.items():
-            result.append({"name": str(brand), "value": ensure_native_type(count)})
+        for b, count in stats.items():
+            result.append({"name": str(b), "value": ensure_native_type(count)})
     
     return jsonify(result[::-1])
 
@@ -244,10 +264,10 @@ def api_dest_data():
         return jsonify([])
     
     province = request.args.get('province', '全国概览')
-    df = GLOBAL_DF.copy()
+    carrier_type = request.args.get('carrier_type', '全部')
+    brand = request.args.get('brand', '')
     
-    if province and province != '全国概览' and '始发省_清理' in df.columns:
-        df = df[df['始发省_清理'] == province]
+    df = apply_filters(GLOBAL_DF.copy(), province, carrier_type, brand)
     
     result = []
     if '目的省_清理' in df.columns:
