@@ -407,12 +407,17 @@
                     // 切换到Tab2时，重新渲染地图
                     if (this.dataset.tab === 'tab2') {
                         setTimeout(() => {
+                            // 先resize，再渲染
                             if (dispatchChart) {
                                 dispatchChart.resize();
-                                // 重新渲染调度地图
-                                loadRegions();
+                                dispatchChart.clear();
                             }
-                        }, 100);
+                            if (mapChart) {
+                                mapChart.resize();
+                            }
+                            // 重新渲染调度地图
+                            loadRegions();
+                        }, 150);
                     }
                 });
             });
@@ -514,6 +519,21 @@
         }
         
         async function loadRegions() {
+            // 确保地图已加载
+            if (!chinaGeoJson) {
+                console.log('等待地图加载...');
+                // 重新尝试加载地图
+                try {
+                    const res = await fetch(chinaMapUrl);
+                    chinaGeoJson = await res.json();
+                    echarts.registerMap('china', chinaGeoJson);
+                    console.log('✅ 地图重新加载成功');
+                } catch(e) {
+                    console.error('地图加载失败:', e);
+                    return;
+                }
+            }
+            
             try {
                 const res = await fetch('/api/regions');
                 const data = await res.json();
@@ -539,9 +559,19 @@
                     `;
                 }
                 grid.innerHTML = html;
-                updateDispatchMap(data.regions);
                 
-            } catch(e) { console.error(e); }
+                // 渲染调度地图 - 确保chart存在
+                if (dispatchChart && !dispatchChart.isDisposed()) {
+                    updateDispatchMap(data.regions);
+                } else if (dispatchChart) {
+                    // 如果chart被disposed，重新初始化
+                    dispatchChart = echarts.init(document.getElementById('dispatchMap'));
+                    updateDispatchMap(data.regions);
+                }
+                
+            } catch(e) { 
+                console.error('加载大区数据失败:', e); 
+            }
         }
         
         function updateMap(data, province) {
