@@ -404,20 +404,21 @@
                     this.classList.add('active');
                     document.getElementById(this.dataset.tab).classList.add('active');
                     
-                    // 切换到Tab2时，重新渲染地图
+                    // 切换到Tab2时
                     if (this.dataset.tab === 'tab2') {
                         setTimeout(() => {
-                            // 先resize，再渲染
                             if (dispatchChart) {
                                 dispatchChart.resize();
-                                dispatchChart.clear();
                             }
+                        }, 200);
+                    }
+                    // 切换回Tab1时
+                    if (this.dataset.tab === 'tab1') {
+                        setTimeout(() => {
                             if (mapChart) {
                                 mapChart.resize();
                             }
-                            // 重新渲染调度地图
-                            loadRegions();
-                        }, 150);
+                        }, 200);
                     }
                 });
             });
@@ -519,20 +520,7 @@
         }
         
         async function loadRegions() {
-            // 确保地图已加载
-            if (!chinaGeoJson) {
-                console.log('等待地图加载...');
-                // 重新尝试加载地图
-                try {
-                    const res = await fetch(chinaMapUrl);
-                    chinaGeoJson = await res.json();
-                    echarts.registerMap('china', chinaGeoJson);
-                    console.log('✅ 地图重新加载成功');
-                } catch(e) {
-                    console.error('地图加载失败:', e);
-                    return;
-                }
-            }
+            if (!chinaGeoJson) return;
             
             try {
                 const res = await fetch('/api/regions');
@@ -560,12 +548,8 @@
                 }
                 grid.innerHTML = html;
                 
-                // 渲染调度地图 - 确保chart存在
-                if (dispatchChart && !dispatchChart.isDisposed()) {
-                    updateDispatchMap(data.regions);
-                } else if (dispatchChart) {
-                    // 如果chart被disposed，重新初始化
-                    dispatchChart = echarts.init(document.getElementById('dispatchMap'));
+                // 渲染调度地图
+                if (dispatchChart) {
                     updateDispatchMap(data.regions);
                 }
                 
