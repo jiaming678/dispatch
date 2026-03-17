@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>长久物流全国调度指挥中心</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --bg-dark: #0a0e27;
+            --bg-card: rgba(16, 28, 58, 0.8);
+            --border-glow: rgba(0, 210, 255, 0.3);
+            --text-primary: #00d2ff;
+            --text-secondary: #8892a0;
+            --accent-green: #00ff88;
+            --accent-yellow: #ffd700;
+            --accent-red: #ff6b6b;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1a3e 100%);
+            color: #fff;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0,210,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,210,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .header {
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(10,14,39,0.95) 0%, rgba(10,14,39,0.8) 100%);
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-glow);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--text-primary), var(--accent-green));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0,210,255,0.5);
+            letter-spacing: 3px;
+        }
+        
+        .tabs { display: flex; gap: 10px; }
+        
+        .tab {
+            padding: 10px 30px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px 8px 0 0;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .tab:hover { background: rgba(0,210,255,0.1); color: #fff; }
+        
+        .tab.active {
+            background: linear-gradient(135deg, var(--text-primary), #0099cc);
+            color: #fff;
+            border-color: var(--text-primary);
+        }
+        
+        .main { display: flex; min-height: calc(100vh - 80px); position: relative; z-index: 5; }
+        
+        .sidebar {
+            width: 280px;
+            background: rgba(0,20,40,0.6);
+            border-right: 1px solid var(--border-glow);
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .sidebar h3 { color: var(--text-primary); margin-bottom: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .control-group { margin-bottom: 25px; }
+        
+        .control-group label { display: block; color: var(--text-secondary); margin-bottom: 8px; font-size: 13px; }
+        
+        select, input[type="date"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        select:focus, input:focus { border-color: var(--text-primary); box-shadow: 0 0 15px rgba(0,210,255,0.3); }
+        option { background: #1a1a3e; }
+        
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.5s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .kpi-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 25px; }
+        
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+            animation: slideIn 0.6s ease backwards;
+        }
+        
+        .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+        .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+        .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+        .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .kpi-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,210,255,0.2); border-color: var(--text-primary); }
+        
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--text-primary), transparent);
+        }
+        
+        .kpi-value { font-size: 2.5em; font-weight: 700; color: var(--text-primary); text-shadow: 0 0 20px rgba(0,210,255,0.5); margin-bottom: 8px; }
+        .kpi-value.green { color: var(--accent-green); text-shadow: 0 0 20px rgba(0,255,136,0.5); }
+        .kpi-value.yellow { color: var(--accent-yellow); text-shadow: 0 0 20px rgba(255,215,0,0.5); }
+        .kpi-value.red { color: var(--accent-red); text-shadow: 0 0 20px rgba(255,107,107,0.5); }
+        
+        .kpi-label { color: var(--text-secondary); font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .charts-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; }
+        
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 15px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-card::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(0,210,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        
+        .chart-title {
+            color: var(--text-primary);
+            font-size: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0,210,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .chart-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--text-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--text-primary);
+        }
+        
+        .chart { width: 100%; height: 450px; }
+        .chart-small { height: 280px; }
+        
+        .charts-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--border-glow);
+            border-radius: 30px;
+            padding: 10px 25px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .status-dot { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; animation: pulse 2s infinite; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .loading { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary); }
+        
+        .region-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        
+        .region-card { background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: 15px; padding: 20px; }
+        
+        .region-name { color: var(--text-primary); font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
+        
+        .region-dot { width: 12px; height: 12px; border-radius: 50%; }
+        
+        .fleet-list { display: flex; flex-wrap: wrap; gap: 8px; }
+        
+        .fleet-tag { background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.3); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text-secondary); }
+        
+        .map-loading { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            color: var(--text-secondary); font-size: 14px;
+        }
+        
+        @media (max-width: 1400px) {
+            .kpi-container { grid-template-columns: repeat(2, 1fr); }
+            .charts-grid { grid-template-columns: 1fr; }
+            .charts-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚚 长久物流全国调度指挥中心</h1>
+        <div class="tabs">
+            <div class="tab active" data-tab="tab1">📊 历史路由资源库</div>
+            <div class="tab" data-tab="tab2">📡 实时运力调度大厅</div>
+        </div>
+    </div>
+    
+    <div class="main">
+        <div class="sidebar">
+            <h3>🎛️ 筛选控制台</h3>
+            
+            <div class="control-group">
+                <label>📍 始发省份</label>
+                <select id="provinceSelect">
+                    <option value="全国概览">🏠 全国概览</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>📅 发车日期范围</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="date" id="startDate">
+                    <input type="date" id="endDate">
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <button onclick="loadData()" style="
+                    width: 100%;
+                    padding: 12px;
+                    background: linear-gradient(135deg, var(--text-primary), #0099cc);
+                    border: none;
+                    border-radius: 8px;
+                    color: #fff;
+                    font-size: 14px;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                ">🔄 刷新数据</button>
+            </div>
+            
+            <div style="margin-top: 30px; padding: 15px; background: rgba(0,0,0,0.2); border-radius: 10px;">
+                <div style="color: var(--text-secondary); font-size: 12px; margin-bottom: 8px;">📁 数据状态</div>
+                <div id="dataStatus" style="color: var(--accent-green); font-size: 13px;">加载中...</div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="tab-content active" id="tab1">
+                <div class="kpi-container">
+                    <div class="kpi-card">
+                        <div class="kpi-value" id="kpiTotal">0</div>
+                        <div class="kpi-label">总计划量 (单)</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value yellow" id="kpiRatio">0%</div>
+                        <div class="kpi-label">发运量占比</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value green" id="kpiSelf">0%</div>
+                        <div class="kpi-label">自营发运占比</div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-value red" id="kpiOut">0%</div>
+                        <div class="kpi-label">外协发运占比</div>
+                    </div>
+                </div>
+                
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title" id="mapTitle">🗺️ 始发省资源分布热力图</div>
+                        <div id="chinaMap" class="chart">
+                            <div class="map-loading">地图加载中...</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="chart-card">
+                            <div class="chart-title">🚚 运力类型分布</div>
+                            <div id="carrierPie" class="chart chart-small"></div>
+                        </div>
+                        <div class="chart-card" style="margin-top: 20px;">
+                            <div class="chart-title">🏭 发运品牌 Top 10</div>
+                            <div id="brandBar" class="chart chart-small"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-row">
+                    <div class="chart-card">
+                        <div class="chart-title">🎯 目的省流向 Top 10</div>
+                        <div id="destBar" class="chart"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="tab-content" id="tab2">
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-title">🗺️ 全国业务中心分布</div>
+                        <div id="dispatchMap" class="chart">
+                            <div class="map-loading">地图加载中...</div>
+                        </div>
+                    </div>
+                    <div class="region-grid" id="regionGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-bar">
+        <div class="status-dot"></div>
+        <span id="statusText">系统运行中</span>
+    </div>
+
+    <script>
+        // 中国地图GeoJSON
+        const chinaMapUrl = 'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json';
+        
+        let mapChart, carrierChart, brandChart, destChart, dispatchChart;
+        let chinaGeoJson = null;
+        
+        // 初始化 - 等待地图加载完成
+        window.onload = function() {
+            // 先加载地图
+            fetch(chinaMapUrl)
+                .then(res => res.json())
+                .then(data => {
+                    chinaGeoJson = data;
+                    echarts.registerMap('china', data);
+                    console.log('✅ 中国地图加载成功');
+                    
+                    // 地图加载完成后再初始化所有图表
+                    initCharts();
+                    loadProvinces();
+                    loadDateRange();
+                    loadData();
+                    loadRegions();
+                })
+                .catch(err => {
+                    console.error('地图加载失败:', err);
+                    document.getElementById('chinaMap').innerHTML = '<div class="map-loading">地图加载失败，请刷新页面</div>';
+                    document.getElementById('dispatchMap').innerHTML = '<div class="map-loading">地图加载失败，请刷新页面</div>';
+                });
+            
+            // Tab切换
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab).classList.add('active');
+                    
+                    // 切换到Tab2时，重新渲染地图
+                    if (this.dataset.tab === 'tab2') {
+                        setTimeout(() => {
+                            if (dispatchChart) {
+                                dispatchChart.resize();
+                                // 重新渲染调度地图
+                                loadRegions();
+                            }
+                        }, 100);
+                    }
+                });
+            });
+            
+            document.getElementById('provinceSelect').addEventListener('change', loadData);
+            document.getElementById('startDate').addEventListener('change', loadData);
+            document.getElementById('endDate').addEventListener('change', loadData);
+        };
+        
+        function initCharts() {
+            mapChart = echarts.init(document.getElementById('chinaMap'));
+            carrierChart = echarts.init(document.getElementById('carrierPie'));
+            brandChart = echarts.init(document.getElementById('brandBar'));
+            destChart = echarts.init(document.getElementById('destBar'));
+            dispatchChart = echarts.init(document.getElementById('dispatchMap'));
+            
+            window.onresize = function() {
+                mapChart && mapChart.resize();
+                carrierChart && carrierChart.resize();
+                brandChart && brandChart.resize();
+                destChart && destChart.resize();
+                dispatchChart && dispatchChart.resize();
+            };
+        }
+        
+        async function loadProvinces() {
+            try {
+                const res = await fetch('/api/provinces');
+                const data = await res.json();
+                const select = document.getElementById('provinceSelect');
+                select.innerHTML = '<option value="全国概览">🏠 全国概览</option>';
+                data.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p;
+                    opt.textContent = '📍 ' + p;
+                    select.appendChild(opt);
+                });
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadDateRange() {
+            try {
+                const res = await fetch('/api/date_range');
+                const data = await res.json();
+                if (data.min && data.max) {
+                    document.getElementById('startDate').value = data.min;
+                    document.getElementById('endDate').value = data.max;
+                }
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadData() {
+            const province = document.getElementById('provinceSelect').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            document.getElementById('dataStatus').textContent = '加载中...';
+            
+            try {
+                const kpiRes = await fetch(`/api/kpi?province=${province}&start_date=${startDate}&end_date=${endDate}`);
+                const kpi = await kpiRes.json();
+                document.getElementById('kpiTotal').textContent = kpi.total.toLocaleString();
+                document.getElementById('kpiRatio').textContent = kpi.total_ratio + '%';
+                document.getElementById('kpiSelf').textContent = kpi.self_ratio + '%';
+                document.getElementById('kpiOut').textContent = kpi.out_ratio + '%';
+                
+                const mapRes = await fetch(`/api/map_data?province=${province}`);
+                const mapData = await mapRes.json();
+                updateMap(mapData, province);
+                
+                // 更新地图标题
+                const mapTitle = document.getElementById('mapTitle');
+                if (province === '全国概览') {
+                    mapTitle.textContent = '🗺️ 始发省资源分布热力图';
+                } else {
+                    mapTitle.textContent = `🗺️ ${province}发往目的省流向分布`;
+                }
+                
+                const carrierRes = await fetch(`/api/carrier_data?province=${province}`);
+                const carrierData = await carrierRes.json();
+                updateCarrierPie(carrierData);
+                
+                const brandRes = await fetch(`/api/brand_data?province=${province}`);
+                const brandData = await brandRes.json();
+                updateBrandBar(brandData);
+                
+                const destRes = await fetch(`/api/dest_data?province=${province}`);
+                const destData = await destRes.json();
+                updateDestBar(destData);
+                
+                document.getElementById('dataStatus').textContent = '✅ 数据加载完成';
+                document.getElementById('dataStatus').style.color = '#00ff88';
+                
+            } catch(e) {
+                console.error(e);
+                document.getElementById('dataStatus').textContent = '❌ 加载失败';
+                document.getElementById('dataStatus').style.color = '#ff6b6b';
+            }
+        }
+        
+        async function loadRegions() {
+            try {
+                const res = await fetch('/api/regions');
+                const data = await res.json();
+                
+                const grid = document.getElementById('regionGrid');
+                const colors = {
+                    '东北公司': '#ff6b6b', '华北公司': '#ffd700', '华东公司': '#00d2ff',
+                    '华中公司': '#00ff88', '华南公司': '#9b59b6', '西南公司': '#e74c3c', '西北公司': '#f39c12'
+                };
+                
+                let html = '';
+                for (const [region, cities] of Object.entries(data.regions)) {
+                    html += `
+                        <div class="region-card">
+                            <div class="region-name">
+                                <div class="region-dot" style="background: ${colors[region]}"></div>
+                                ${region} (${cities.length}个城市)
+                            </div>
+                            <div class="fleet-list">
+                                ${cities.map(c => `<span class="fleet-tag">${c}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                grid.innerHTML = html;
+                updateDispatchMap(data.regions);
+                
+            } catch(e) { console.error(e); }
+        }
+        
+        function updateMap(data, province) {
+            if (!chinaGeoJson) return;
+            
+            const maxVal = Math.max(...data.map(d => d.value), 1);
+            
+            let title;
+            if (province === '全国概览') {
+                title = '始发省资源分布热力图';
+            } else {
+                title = province + '发往目的省流向分布';
+            }
+            
+            mapChart.setOption({
+                backgroundColor: 'transparent',
+                title: {
+                    text: title,
+                    left: 'center',
+                    top: 10,
+                    textStyle: { color: '#00d2ff', fontSize: 14 }
+                },
+                tooltip: { trigger: 'item', formatter: '{b}: {c} 单' },
+                visualMap: {
+                    min: 0,
+                    max: maxVal,
+                    left: 'left',
+                    top: 'bottom',
+                    text: ['高', '低'],
+                    textStyle: {color: '#fff'},
+                    calculable: true,
+                    inRange: {color: ['#1a3f5f', '#00d2ff', '#00ff88']}
+                },
+                geo: {
+                    map: 'china',
+                    roam: true,
+                    label: {show: false},
+                    itemStyle: {areaColor: 'rgba(0,210,255,0.1)', borderColor: 'rgba(0,210,255,0.3)'},
+                    emphasis: {label: {show: true, color: '#fff'}, itemStyle: {areaColor: 'rgba(0,210,255,0.4)'}}
+                },
+                series: [{ type: 'map', map: 'china', geoIndex: 0, data: data }]
+            });
+        }
+        
+        function updateCarrierPie(data) {
+            carrierChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {trigger: 'item', formatter: '{b}: {c} ({d}%)'},
+                legend: {orient: 'vertical', right: 10, top: 'center', textStyle: {color: '#fff'}},
+                series: [{
+                    type: 'pie',
+                    radius: ['30%', '70%'],
+                    center: ['40%', '50%'],
+                    itemStyle: {borderRadius: 8, borderColor: '#0a0e27', borderWidth: 2},
+                    label: {show: false},
+                    data: data.map((d, i) => ({ name: d.name, value: d.value, itemStyle: {color: i === 0 ? '#00ff88' : '#ffd700'} }))
+                }]
+            });
+        }
+        
+        function updateBrandBar(data) {
+            brandChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {trigger: 'axis'},
+                grid: {left: '3%', right: '15%', bottom: '3%', top: '3%', containLabel: true},
+                xAxis: {type: 'value', axisLabel: {color: '#888'}, splitLine: {lineStyle: {color: 'rgba(255,255,255,0.1)'}}},
+                yAxis: {type: 'category', data: data.map(d => d.name), axisLabel: {color: '#fff', fontSize: 11}},
+                series: [{ type: 'bar', data: data.map(d => d.value), itemStyle: {color: '#00d2ff'}, label: {show: true, position: 'right', color: '#fff'} }]
+            });
+        }
+        
+        function updateDestBar(data) {
+            destChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {trigger: 'axis'},
+                grid: {left: '3%', right: '15%', bottom: '3%', top: '3%', containLabel: true},
+                xAxis: {type: 'value', axisLabel: {color: '#888'}, splitLine: {lineStyle: {color: 'rgba(255,255,255,0.1)'}}},
+                yAxis: {type: 'category', data: data.map(d => d.name), axisLabel: {color: '#fff', fontSize: 11}},
+                series: [{ type: 'bar', data: data.map(d => d.value), itemStyle: {color: '#ff6b6b'}, label: {show: true, position: 'right', color: '#fff'} }]
+            });
+        }
+        
+        function updateDispatchMap(regions) {
+            if (!chinaGeoJson) return;
+            
+            const coords = {
+                '长春': [125.32, 43.89], '沈阳': [123.43, 41.81], '哈尔滨': [126.53, 45.80],
+                '大连': [121.64, 38.91], '北京': [116.41, 39.90], '天津': [117.20, 39.08],
+                '保定': [115.46, 38.87], '郑州': [113.63, 34.75], '青岛': [120.38, 36.07],
+                '济南': [117.12, 36.65], '上海': [121.47, 31.23], '常熟': [120.75, 31.65],
+                '常州': [119.95, 31.81], '宁波': [121.54, 29.87], '芜湖': [118.43, 31.35],
+                '合肥': [117.28, 31.86], '武汉': [114.31, 30.59], '长沙': [112.94, 28.23],
+                '抚州': [116.36, 28.00], '广州': [113.26, 23.13], '柳州': [109.43, 24.33],
+                '重庆': [106.55, 29.56], '成都': [104.07, 30.66], '宜宾': [104.64, 28.75],
+                '西安': [108.94, 34.34]
+            };
+            
+            const colors = {
+                '东北公司': '#ff6b6b', '华北公司': '#ffd700', '华东公司': '#00d2ff',
+                '华中公司': '#00ff88', '华南公司': '#9b59b6', '西南公司': '#e74c3c', '西北公司': '#f39c12'
+            };
+            
+            const scatterData = [];
+            for (const [region, cities] of Object.entries(regions)) {
+                cities.forEach(city => {
+                    if (coords[city]) {
+                        scatterData.push({
+                            name: city,
+                            value: [...coords[city], 100],
+                            itemStyle: {color: colors[region]}
+                        });
+                    }
+                });
+            }
+            
+            dispatchChart.setOption({
+                backgroundColor: 'transparent',
+                tooltip: {trigger: 'item'},
+                geo: {
+                    map: 'china',
+                    roam: true,
+                    label: {show: false},
+                    itemStyle: {areaColor: 'rgba(0,210,255,0.1)', borderColor: 'rgba(0,210,255,0.3)'},
+                    emphasis: {label: {show: true}, itemStyle: {areaColor: 'rgba(0,210,255,0.3)'}}
+                },
+                series: [{
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    data: scatterData,
+                    symbolSize: 15,
+                    showEffectOn: 'render',
+                    rippleEffect: {brushType: 'stroke'},
+                    itemStyle: {shadowBlur: 10, shadowColor: 'rgba(0,210,255,0.5)'},
+                    zlevel: 1
+                }]
+            });
+        }
+    </script>
+</body>
+</html>

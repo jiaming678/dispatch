@@ -1,0 +1,262 @@
+# Source URL: https://open.feishu.cn/document/ukTMukTMukTM/uADOwUjLwgDM14CM4ATN
+# Content Length: 15230 characters
+# Extracted at: 2026-03-12 21:17:15
+#============================================================
+
+Markdown - Developer Guides - Documentation - Feishu Open Platform
+[![](//lf-package-cn.feishucdn.com/obj/feishu-static/lark/open/doc/frontend/images/903e9787438e93aec1e412c4b284ca31.svg)](https://open.feishu.cn/?lang=en-US)
+\* [Customer Stories](https://open.feishu.cn/solutions?lang=en-US)
+\* [App Directory](https://app.feishu.cn/?lang=en-US)
+\* [Documentation](/document)
+\* [AI Assistant
+AI for developers](https://open.feishu.cn/app/ai/playground?from=nav⟨=en-US)
+\* [Developer Console](https://open.feishu.cn/app?lang=en-US)
+Login
+\* [Home](/document/home/index)
+\* [Developer Guides](/document/client-docs/intro)
+\* [Developer Tutorials](/document/course)
+\* [Server API](/document/ukTMukTMukTM/ukDNz4SO0MjL5QzM/AI-assistant-code-generation-guide)
+\* [Client API](/document/client-docs/h5/)
+\* [MCP](/document/uAjLw4CM/ukTMukTMukTM/mcp\_integration/mcp\_introduction)
+\* [Feishu Plugin for OpenClaw](https://bytedance.larkoffice.com/docx/MFK7dDFLFoVlOGxWCv5cTXKmnMh)
+API Explorer[CardKit](/cardkit?from=open\_docs\_header)What's New
+Search content
+Platform Introduction
+Develop Process
+Develop Bots
+Develop Web Apps
+Develop Gadgets (Not Recommended)
+Develop Docs Add-ons
+Develop Base Extensions
+Develop Workplace Blocks
+Development link preview
+Feishu Cards
+Web Components
+Native integration
+SSO&End User Consent
+AppLink Protocol
+Developer Tools
+FAQ
+Management Practice
+Platform Notices
+Deprecated Guides
+Message Card
+[Introduction of Message cards](/document/common-capabilities/message-card/introduction-of-message-cards)
+Quick Start
+[Overview of message card builder](/document/common-capabilities/message-card/message-card-builder)
+[Create message card](/document/deprecated-guide/message-card/create-message-card)
+Build card content
+Configuring card callbacks
+[Preview and publish cards](/document/deprecated-guide/message-card/preview-and-save-cards)
+Send message card
+Component
+[Component overview](/document/deprecated-guide/message-card/component-list/component-overview)
+[Multi-column layout](/document/common-capabilities/message-card/message-cards-content/column-set)
+Content components
+[Text](/document/common-capabilities/message-card/message-cards-content/embedded-non-interactive-elements/text)
+[Markdown](/document/common-capabilities/message-card/message-cards-content/using-markdown-tags)
+[Card Header](/document/common-capabilities/message-card/message-cards-content/card-header)
+[Image](/document/common-capabilities/message-card/message-cards-content/image-module)
+[Separator](/document/common-capabilities/message-card/message-cards-content/divider-line-module)
+Interactive components
+Combinations
+[Common components and elements](/document/deprecated-guide/message-card/component-list/common-components-and-elements)
+[Message card design specifications](/document/tools-and-resources/design-specification/message-card-design-specifications)
+Message Card Example
+Web App
+Gadgets
+App Login
+[Developer Guides](/document/client-docs/intro)[Deprecated Guides](/document/common-capabilities/message-card/introduction-of-message-cards)[Message Card](/document/common-capabilities/message-card/introduction-of-message-cards)[Component](/document/deprecated-guide/message-card/component-list/component-overview)[Content components](/document/common-capabilities/message-card/message-cards-content/embedded-non-interactive-elements/text)
+Markdown
+# Markdown
+Copy Page
+Last updated on 2024-08-20
+The contents of this article
+[Component display](#4e36a94e)
+[Parameter description](#8bf03f86)
+[Supported syntax](#4cbfb650)
+[Card example](#a45b0a49)
+[Markdown component](#1b6f18c3)
+[lark\\_md mode for text](#857e94b8)
+# Markdown
+In addition to the text component, the message card also provides the Markdown component. Markdown component can be used to render text formats, pictures, dividing lines and other elements. This article will introduce Markdown component and corresponding JSON parameter descriptions.
+This document refers to legacy message cards and is no longer maintained. To view the corresponding updated documentation, refer to [Rich text](/document/uAjLw4CM/ukzMukzMukzM/feishu-cards/card-components/content-components/rich-text).
+## Component display
+In the message card building tool, the Markdown component is shown in the figure below. After adding the component, you can adjust configuration items such as \*\*Style\*\*, \*\*Content\*\*, and \*\*Interaction\*\*.
+The message card building tool currently does not support debugging and preview the ordered list, unordered list, and code block syntax of the Markdown component.
+![](//sf3-cn.feishucdn.com/obj/open-platform-opendoc/7da4c4eaa2537430abfbd7973ed8d567\_3Ke7qUmazf.png?height=1414&lazyload=true&maxWidth=600&width=2882)
+In addition, the text component provided by the tool supports adjusting the text format to Markdown. The corresponding JSON description is to set `"tag": "lark\_md"` in the `text` element. For details, see [text component](/document/ukTMukTMukTM/uUzNwUjL1cDM14SN3ATN).
+\* Markdown tags that are independent of text formatting (e.g., images, dividing lines) cannot be used in text elements.
+\* This article only introduces the Markdown content format of the card. When actually sending the card message, you need to combine it with the parameter configuration of the specific interface. For example, when calling the [Send Message](/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message/create) interface, the Markdown card content needs to be passed into the `content` field of the interface. In addition, it needs to be set according to the card content. Message type (`msg\_type`), message recipient ID (`receive\_id`) and other fields.
+## Parameter description
+The parameters contained in the Markdown component are described in the following table.
+| Parameters | Required | Type | Description |
+| --- | --- | --- | --- |
+| tag | Yes | String | Markdown component label, fixed value: markdown. |
+| content | Yes | String | Construct Markdown content using supported Markdown syntax. Syntax details can be found in the \*\*Supported Syntax\*\* section below. |
+| text\\_align | No | String | Set the alignment of text content. Value: \* \*\*left\*\*: Left aligned \* \*\*center\*\*: center alignment \* \*\*right\*\*: right aligned \*\*Default\*\*: left |
+| href | No | Object | Differential jump. Only use it when you need to jump to different links on PC or mobile. Example values: ``` { "urlVal": { "url": "https://feishu.com", "android\_url": "https://android.com/", "ios\_url": "https://apple.com/", "pc\_url": "https://windows.com" } } ``` |
+## Supported syntax
+Currently only a subset of markdown syntax is supported, see the table below for details.
+| Name | Syntax | Effect | Available range |
+| --- | --- | --- | --- |
+| Line break | ``` \n ``` | textnewline | \* Markdown component \* text element |
+| italic | ``` \*italics\* ``` | \*italic\* | \* Markdown component \* text element |
+| Bold | ``` \*\*bold\*\* or \_\_bold\_\_ ``` | \*\*bold\*\* | \* Markdown component \* text element |
+| Strikethrough | ``` ~~strikethrough~~ ``` | ~~strikethrough~~ | \* Markdown component \* text element |
+| @designated person | ```    ``` | @username | \* Markdown component \* text element [Custom robot](/document/ukTMukTMukTM/ucTM5YjL3ETO24yNxkjN) only supports the use of `open\_id`, `user\_id` @specified person. |
+| @everyone | ```  ``` | @everyone | \* Markdown component \* text element @Everyone needs the group owner to enable permission. If it is not turned on, the card will fail to be sent. |
+| Hyperlink | ```  ``` |  | \* Markdown component \* text element Hyperlinks must contain a schema to take effect, currently only HTTP and HTTPS are supported. |
+| Colored text styles | ```  This is a green text   This is a red text   This is a gray text  ``` | | \* Markdown component \* text element\\*Colored text styles do not support taking effect on links and text Supports three color text: red, gray and green. color value: \* \*\*green\*\*: green text \* \*\*red\*\*: red text \* \*\*grey\*\*: gray text \* \*\*default\*\*: The default black text style on white background |
+| Text link | ``` [Open platform](https://open.feishu.cn/) ``` | [Open platform](https://open.feishu.cn/) | \* Markdown component \* text element Hyperlinks must contain a schema to take effect, currently only HTTP and HTTPS are supported. |
+| Differential jump | ``` { "tag": "markdown", "href": { "urlVal": { "url": "xxx", "pc\_url":"xxx", "ios\_url": "xxx", "android\_url": "xxx" } }, "content": "[Differential jump]($urlVal)" } ``` | - | \* Markdown component \* text element\\*Hyperlinks must contain schema to take effect. Currently only HTTP and HTTPS are supported. Only use it when you need to jump to different links on PC or mobile. |
+| Pictures | ``` ![hover\_text](image\_key) ``` | | \* Only supports Markdown component \* Not supported in `lark\_md` type of text element \* The prompt copy refers to the copy displayed when the cursor hovers over the image on the PC. \* \*\*image\\_key\*\* can be obtained by calling the [Upload Image](/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/image/create) interface. |
+| Separating line | ``` \n ---\n ``` | | \* Only supports Markdown component \* Not supported in `lark\_md` type of text element The `---` symbol must be used after a newline character, with 1 space between it and the newline character. |
+| Feishu Expressions | ``` :Emoji Key: ``` | | \* Markdown component \* text element \* For the list of supported Emoji Keys, please refer to [Emoji Copy Instructions](/document/uAjLw4CM/ukTMukTMukTM/reference/im-v1/message-reaction/emojis-introduce) |
+| Text tag | ``` Tag text ``` | | \* Markdown component \* text element \* The enumeration value range supported by `color` includes: `neutral``blue``turquoise``lime``orange``violet``indigo``wathet``green``yellow``red``purple``carmine` |
+| Ordered list | ``` 1. Ordered list 1 1. Ordered list 1.1 2. Ordered list 2 ``` | 1. Ordered list 1 1. Ordered list 1.1 2. Ordered list 2 | \* Only supports Markdown component \* Numbers must be used at the beginning of a line \* Four spaces represent one level of indentation This syntax is effective only in Feishu version 7.6 and above. In lower versions of the Feishu client, Markdown components containing this syntax will be displayed as an image for prompting upgrading. |
+| Unordered list | ``` - Unordered list 1 - Unordered list 1.1 - Unordered list 2 ``` | \* Unordered list 1 + Unordered list 1.1 \* Unordered list 2 | \* Only supports Markdown component \* The bullet point must be used at the beginning of a line \* Four spaces represent one level of indentation This syntax is effective only in Feishu version 7.6 and above. In lower versions of the Feishu client, Markdown components containing this syntax will be displayed as an image for prompting upgrading. |
+| Code block | ``` ```JSON {"This is": "JSON demo"} ``` ``` | ``` {"This is":"JSON demo"} ``` | \* Only supports Markdown component \* Supports specifying the programming language for parsing. If not specified, it defaults to Plain Text \* Code syntax and code content must be used at the beginning of a line This syntax is effective only in Feishu version 7.6 and above. In lower versions of the Feishu client, Markdown components containing this syntax will be displayed as an image for prompting upgrading. |
+If the characters you want to display match the special characters used in markdown syntax (such as special symbols such as `\*, ~, >, <`), the special characters need to be HTML escaped before they can be displayed normally. The escape symbol comparison table is as follows:
+| \*\*Special Characters\*\* | \*\*Escape Characters\*\* | \*\*Description\*\* |
+| --- | --- | --- |
+| ` ` | Non-break space |
+| ` ` | Half-width space |
+| ` ` | Full width space |
+| `>` | `>` | Greater than sign |
+| `<` | `<` | Less than sign |
+| `~` | `∼` | Gone with the Wind |
+| `-` | `-` | hyphen |
+| `!` | `!` | Exclamation mark |
+| `\*` | `\*` | asterisk |
+| `/` | `/` | slash |
+| `\` | `\` | backslash |
+| `[` | `[` | The left part of the square bracket |
+| `]` | `]` | The right part of the square bracket |
+| `(` | `(` | The left part of the parenthesis |
+| `)` | `)` | The right part of the parenthesis |
+| `#` | `#` | pound sign |
+| `:` | `:` | colon |
+| `+` | `+` | plus sign |
+| `"` | `"` | English quotation marks |
+| `'` | `'` | English single quotes |
+| ` | ``` | Backquote |
+| `$` | `$` | dollar sign |
+| `\_` | `\_` | Underline |
+| `-` | `-` | Unordered list |
+For more escape characters, please refer to [HTML Escape Universal Standard](https://www.w3school.com.cn/charsets/ref\_html\_8859.asp). The escaped format is `&#entity number;` .
+## Card example
+### Markdown component
+An example of usage in the message card Markdown component is shown in the following JSON code.
+```
+{
+"elements":[
+{
+"tag":"markdown",
+"href":{
+"urlVal":{
+"url":"xxx1",
+"pc\_url":"xxx2",
+"ios\_url":"xxx3",
+"android\_url":"xxx4"
+}
+},
+"content":"Normal text\nStandard emoji😁😢🌞💼🏆❌✅\n\*italic\*\n\*\*bold\*\*\n~~strikethrough~~\n[text link](www.example. com)\n[Differential jump]($urlVal)\n"
+},
+{
+"tag":"hr"
+},
+{
+"tag":"markdown",
+"content":"The above is a dividing line\n![hover\_text](img\_v2\_16d4ea4f-6cd5-48fa-97fd-25c8d4e79b0g)\nThe above is a picture label"
+}
+],
+"header":{
+"template":"blue",
+"title":{
+"content":"This is the card title bar",
+"tag":"plain\_text"
+}
+}
+}
+```
+The effect is shown in the figure below:
+### lark\\_md mode for text
+By declaring the `tag` field of [text component](/document/ukTMukTMukTM/uUzNwUjL1cDM14SN3ATN) as `lark\_md`, you can use Markdown tags to configure the text format in `text`. The usage example is as follows JSON code.
+```
+{
+"elements":[
+{
+"tag":"div",
+"text":{
+"tag":"plain\_text",
+"content":"text-lark\_md",
+"lines":1
+},
+"fields":[
+{
+"is\_short":false,
+"text":{
+"tag":"lark\_md",
+"content":"https://open.feishu.cn"
+}
+},
+{
+"is\_short":false,
+"text":{
+"tag":"lark\_md",
+"content":"ready\nnew line"
+}
+},
+{
+"is\_short":false,
+"text":{
+"tag":"lark\_md",
+"content":"\*Italic\*"
+}
+},
+{
+"is\_short":false,
+"text":{
+"tag":"lark\_md",
+"content":"\*\*Bold\*\*"
+}
+},
+{
+"is\_short":false,
+"text":{
+"tag":"lark\_md",
+"content":"~~delete line~~"
+}
+},
+{
+"is\_short":false,
+"text":{
+"tag":"lark\_md",
+"content":""
+}
+}
+]
+}
+]
+}
+```
+The effect is shown in the figure below:
+[Explain](/app/ai/playground?query=Based%20on%20the%20doc%20at%20https%3A%2F%2Fopen.feishu.cn%2Fdocument%2Fcommon-capabilities%2Fmessage-card%2Fmessage-cards-content%2Fusing-markdown-tags%2C%20explain%20what%20%22%22%20means&from=doc\_text\_select)Document Error Correction
+Need help? Try asking AI Assistant
+[Previous:Text](/document/common-capabilities/message-card/message-cards-content/embedded-non-interactive-elements/text)[Next:Card Header](/document/common-capabilities/message-card/message-cards-content/card-header)
+Please log in first before exploring any API.
+Log In
+RUN[Go to API Explorer](/api-explorer?from=op\_doc&)
+The contents of this article
+[Component display](#4e36a94e)
+[Parameter description](#8bf03f86)
+[Supported syntax](#4cbfb650)
+[Card example](#a45b0a49)
+[Markdown component](#1b6f18c3)
+[lark\\_md mode for text](#857e94b8)
+Try It
+Feedback
+OnCall
+Collapse
+Expand

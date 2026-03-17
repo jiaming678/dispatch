@@ -1,0 +1,181 @@
+# Source URL: https://clawskills.co/
+# Content Length: 8164 characters
+# Extracted at: 2026-03-13 07:32:27
+#============================================================
+
+2,999 Community Skills
+# Discover & Install OpenClaw Skills
+The community hub for browsing, searching, and one-click installing skills for your AI coding agent. From DevOps to frontend, AI to automation.
+2999+
+Curated Skills
+32
+Categories
+Free
+& Open Source
+## Quick Install
+Install any skill in seconds. Choose your preferred method below.
+1
+### ClawHub CLI
+The fastest way. One command in your terminal.
+npx clawhub@latest install 
+2
+### Chat Install
+Recommended
+Paste the GitHub link into your AI assistant's chat and ask it to install.
+"Install this skill: "
+3
+### Manual Copy
+Copy the skill folder to your skills directory.
+~/.openclaw/skills/
+## Skills Directory
+Browse, search, and install from the community collection.
+All
+AllAI & LLMs (287)Search & Research (252)DevOps & Cloud (212)Web & Frontend Development (202)Marketing & Sales (142)Browser & Automation (139)Productivity & Tasks (135)Coding Agents & IDEs (133)Communication (131)CLI Utilities (129)Clawdbot Tools (120)Notes & PKM (100)Media & Streaming (80)Transportation (73)PDF & Documents (67)Git & GitHub (66)Speech & Transcription (65)Security & Passwords (62)Gaming (62)Image & Video Generation (60)Personal Development (56)Smart Home & IoT (56)Health & Fitness (55)Moltbook (51)Shopping & E-commerce (51)Calendar & Scheduling (50)Data & Analytics (46)Apple Apps & Services (35)Self-Hosted & Automation (25)Finance (22)Agent-to-Agent Protocols (18)iOS & macOS Development (17)
+2999 skills
+### achurch
+by lucasgeeksinthewood
+Coding Agents & IDEs
+A 24/7 digital sanctuary for AI agents and humans — attend
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/lucasgeeksinthewood/achurch)
+### agent-config
+by thatguysizemore
+Coding Agents & IDEs
+Intelligently modify agent core context files
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/thatguysizemore/agent-config)
+### agent-council
+by itsahedge
+Coding Agents & IDEs
+Complete toolkit for creating autonomous AI agents and managing
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/itsahedge/agent-council)
+### agent-identity-kit
+by ryancampbell
+Coding Agents & IDEs
+A portable identity system for AI agents.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/ryancampbell/agent-identity-kit)
+### agenticflow-skill
+by seanphan
+Coding Agents & IDEs
+Comprehensive guide for building AI workflows, agents
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/seanphan/agenticflow-skill)
+### agentlens
+by nguyenphutrong
+Coding Agents & IDEs
+Navigate and understand codebases using agentlens hierarchical
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/nguyenphutrong/agentlens)
+### agentskills-io
+by killerapp
+Coding Agents & IDEs
+Create, validate, and publish Agent Skills following
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/killerapp/agentskills-io)
+### aisa-twitter-api
+by aisapay
+Coding Agents & IDEs
+Search X (Twitter) in real time, extract relevant posts
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/aisapay/aisa-twitter-api)
+### apple-hig
+by kdbhalala
+Coding Agents & IDEs
+Expert guide for designing iOS, macOS, watchOS, tvOS, and visionOS apps.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/kdbhalala/apple-hig)
+### arbiter
+by 5hanth
+Coding Agents & IDEs
+Push decisions to Arbiter Zebu for async human review.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/5hanth/arbiter)
+### aster
+by satyajiit
+Coding Agents & IDEs
+Your AI CoPilot on Mobile — or give your AI its own phone.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/satyajiit/aster)
+### avatar-video-messages
+by thewulf7
+Coding Agents & IDEs
+Generate and send video messages
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/thewulf7/avatar-video-messages)
+### backend-patterns
+by charmmm718
+Coding Agents & IDEs
+Backend architecture patterns, API design, database
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/charmmm718/backend-patterns)
+### bidclub
+by jasonfdg
+Coding Agents & IDEs
+Post investment ideas to the AI-native investment community.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/jasonfdg/bidclub)
+### bidclub-ai
+by jasonfdg
+Coding Agents & IDEs
+Post investment ideas to the AI-native investment community.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/jasonfdg/bidclub-ai)
+### bot-bowl-party
+by fsa317
+Coding Agents & IDEs
+Complete guide for AI agents to participate in BotBowl Party
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/fsa317/bot-bowl-party)
+### botpress-adk
+by yueranlu
+Coding Agents & IDEs
+A guide to build AI bots with Botpress's Agent Development Kit
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/yueranlu/botpress-adk)
+### browse
+by pkiv
+Coding Agents & IDEs
+Complete guide for creating and deploying browser automation functions
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/pkiv/browse)
+### budget-variance-analyzer
+by datadrivenconstruction
+Coding Agents & IDEs
+Analyze budget vs actual
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/datadrivenconstruction/budget-variance-analyzer)
+### buildlog
+by espetey
+Coding Agents & IDEs
+Record, export, and share your AI coding sessions as replayable buildlogs.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/espetey/buildlog)
+### catholic-grounding
+by trevortomesh
+Coding Agents & IDEs
+Help answer questions about Catholicism accurately
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/trevortomesh/catholic-grounding)
+### cc-godmode
+by cubetribe
+Coding Agents & IDEs
+Self-orchestrating multi-agent development workflows.
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/cubetribe/cc-godmode)
+### cellcog
+by nitishgargiitd
+Coding Agents & IDEs
+#1 on DeepResearch Bench (Feb 2026).
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/nitishgargiitd/cellcog)
+### claude-optimised
+by hexnickk
+Coding Agents & IDEs
+Guide for writing and optimizing CLAUDE.md files
+Install [Source](https://github.com/openclaw/skills/tree/main/skills/hexnickk/claude-optimised)
+Loading more skills...
+🔎
+### No skills found
+Try a different search term or category.
+## How OpenClaw Skills Work
+Skills extend your AI coding agent with new capabilities. Here's what you need to know.
+🔎
+### Browse & Search
+Find skills from the community across 32 categories — coding, DevOps, AI, automation, and more.
+⚡
+### One-Click Install
+Install via CLI, paste into chat, or manually copy. Skills work with OpenClaw, Claude Code, and more.
+🚀
+### Extend Your Agent
+Your AI agent gains new abilities. Skills can add tools, knowledge, workflows, and integrations.
+## Frequently Asked Questions
+What are OpenClaw Skills?
+OpenClaw Skills are community-built extensions for AI coding agents. They add new capabilities like connecting to APIs, automating workflows, following coding standards, and more. Skills are stored as markdown files and can be installed globally or per-project.
+How do I install a skill?
+Three ways: (1) Run `npx clawhub@latest install ` in your terminal. (2) Paste the skill's GitHub link into your AI assistant's chat and ask it to install. (3) Manually copy the skill folder to `~/.openclaw/skills/`.
+Are OpenClaw Skills free?
+Yes. All skills listed on ClawSkills and in the awesome-openclaw-skills repository on GitHub are free and open source. Anyone can create and share skills with the community.
+What AI agents work with OpenClaw Skills?
+Skills work with OpenClaw, Claude Code, Codex CLI, OpenCode, and other AI coding agents that support the OpenClaw skill format. Skills stored in workspace or global directories are automatically loaded.
+Where can I find more skills on GitHub?
+The main community repository is [awesome-openclaw-skills](https://github.com/VoltAgent/awesome-openclaw-skills) on GitHub. It lists 2,999 skills organized by category. You can also find skills on [ClawHub](https://clawhub.ai/skills).
+### Install Skill
