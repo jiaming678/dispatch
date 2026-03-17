@@ -596,7 +596,46 @@
                     itemStyle: {areaColor: 'rgba(0,210,255,0.1)', borderColor: 'rgba(0,210,255,0.3)'},
                     emphasis: {label: {show: true, color: '#fff'}, itemStyle: {areaColor: 'rgba(0,210,255,0.4)'}}
                 },
-                series: [{ type: 'map', map: 'china', geoIndex: 0, data: data }]
+                series: [{ 
+                    type: 'map', 
+                    map: 'china', 
+                    geoIndex: 0, 
+                    data: data,
+                    // 点击事件
+                    emphasis: {
+                        itemStyle: {
+                            areaColor: 'rgba(0,210,255,0.6)'
+                        },
+                        label: {
+                            show: true,
+                            color: '#fff'
+                        }
+                    }
+                }]
+            });
+            
+            // 地图点击事件 - 全国概览时点击省份自动切换
+            mapChart.off('click');
+            mapChart.on('click', function(params) {
+                if (params.name) {
+                    // 清理省份名称（去掉省市区等后缀）
+                    let clickedProvince = params.name.replace(/省|市|自治区|回族自治区|维吾尔自治区|壮族自治区/g, '');
+                    
+                    // 检查是否在省份列表中
+                    const provinceSelect = document.getElementById('provinceSelect');
+                    const options = provinceSelect.options;
+                    for (let i = 0; i < options.length; i++) {
+                        if (options[i].text.includes(clickedProvince) || options[i].value === clickedProvince) {
+                            provinceSelect.value = options[i].value;
+                            // 触发数据刷新
+                            loadData();
+                            // 更新标题
+                            const mapTitle = document.getElementById('mapTitle');
+                            mapTitle.textContent = `🗺️ ${clickedProvince}发往目的省流向分布`;
+                            break;
+                        }
+                    }
+                }
             });
         }
         
